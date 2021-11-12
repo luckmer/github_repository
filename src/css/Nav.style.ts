@@ -22,14 +22,7 @@ export const Header = styled.div`
   line-height: inherit;
   white-space: nowrap;
 `;
-export const LiHeader = styled.li`
-  color: #fff;
-  font-size: 1.25rem;
-  transition: all 0.5s;
-  &:hover {
-    color: rgb(255, 125, 147);
-  }
-`;
+
 export const ButtonLi = styled.li`
   border-radius: 20px;
   padding: 10px 30px 10px 30px;

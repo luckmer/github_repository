@@ -1,4 +1,4 @@
-import { Nav, Header, Ul, LiHeader, ButtonLi } from "../css/Nav.style";
+import { Nav, Header, Ul, ButtonLi } from "../css/Nav.style";
 import { Link } from "react-router-dom";
 
 const NavBar = () => {
@@ -7,7 +7,7 @@ const NavBar = () => {
       <Header>
         <Ul>
           <Link to="/">
-            <LiHeader>FINDER</LiHeader>
+            <ButtonLi>FINDER</ButtonLi>
           </Link>
         </Ul>
       </Header>

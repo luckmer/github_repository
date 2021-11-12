@@ -1,72 +1,119 @@
-import styled from "styled-components";
-
+import { FormDiv, FormBox, SearchInput, SearchButton } from "../css/Main.style";
+import { BsSearch } from "react-icons/bs";
 import React, { useState } from "react";
-const Section = styled.section``;
+
+import formHandle from "../helper/formHandle";
+import styled from "styled-components";
 
 interface ErrorInterface {
   status: boolean;
   response: string;
 }
 
-const clearSpacer = (word: string) => {
-  const correctWord = word.includes(",");
-
-  if (!correctWord) return undefined;
-
-  const user = word.replace(/ /g, "").split(",").shift();
-
-  return user;
-};
+const Section = styled.section``;
 
 const Main = () => {
-  const [text, setText] = useState("");
+  const [checkedCheckboxes, setCheckedCheckboxes] = useState<
+    { value: string }[]
+  >([]);
+  const [text, setText] = useState<{ [x: string]: string }>({
+    user: "",
+    repository: ""
+  });
   const [errors, setErrors] = useState<ErrorInterface | undefined>(undefined);
+  const [data, setData] = useState({});
+  const [keys, setKeys] = useState<string[]>([]);
+  // const { getDataByUserName, getDataByRepositoryName } = formHandle;
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault();
 
-    if (!text) {
-      const errorPanel = {
-        status: false,
-        response: "input can't by empty"
-      };
+  //   if (!text) {
+  //     const errorPanel = {
+  //       status: false,
+  //       response: "input can't by empty"
+  //     };
 
-      setErrors(errorPanel);
-      return;
-    }
+  //     setErrors(errorPanel);
+  //     return;
+  //   }
 
-    const byUser = text.includes(",");
+  //   const byUser = text.includes(",");
 
-    switch (byUser) {
-      case true:
-        getDataByUserName();
-        break;
-      case false:
-        getDataByRepositoryName();
-        break;
-      default:
-        break;
-    }
-  };
+  //   const PROPS = { text, setData };
 
-  const getDataByUserName = () => {};
-
-  const getDataByRepositoryName = () => {};
+  //   switch (byUser) {
+  //     case true:
+  //       getDataByUserName({ ...PROPS });
+  //       break;
+  //     case false:
+  //       getDataByRepositoryName({ ...PROPS });
+  //       break;
+  //     default:
+  //       break;
+  //   }
+  // };
+  const handleSubmit = () => {};
 
   const handleChange = (e: React.ChangeEvent<HTMLDivElement>) => {
-    const element = e.currentTarget as HTMLInputElement;
-    const value = element.value;
-    if (!value) return;
-    setText(value);
+    const target = e.target as HTMLInputElement;
+    setText({ ...text, [target.name]: target.value });
   };
+
+  console.log(text);
+
+  const handleCheckboxChange = (data: { value: string }) => {
+    const isChecked = checkedCheckboxes.some(
+      ({ value }: { value: string }) => value === data.value
+    );
+    if (isChecked) {
+      setCheckedCheckboxes(
+        checkedCheckboxes.filter(
+          ({ value }: { value: string }) => value !== data.value
+        )
+      );
+    } else setCheckedCheckboxes((prev) => prev.concat(data));
+  };
+
+  const receivedData = [{ value: "user" }, { value: "repository" }];
 
   return (
     <Section>
-      <form onSubmit={handleSubmit}>
-        <input onChange={handleChange} />
-
-        <input value="submit" type="submit" />
-      </form>
+      <FormDiv>
+        {receivedData?.map((data, index) => {
+          const Sort = checkedCheckboxes.filter(
+            ({ value }: { value: string }) => value === data.value
+          );
+          return (
+            <div key={`cb-${index}`}>
+              <div>
+                <input
+                  value={data.value}
+                  type="checkbox"
+                  checked={checkedCheckboxes.some(
+                    ({ value }: { value: string }) => {
+                      return value === data.value;
+                    }
+                  )}
+                  onChange={() => handleCheckboxChange(data)}
+                />
+                {data.value}
+              </div>
+              <form>
+                {Sort.map(({ value }: { value: string }) => (
+                  <div key={value}>
+                    <input
+                      name={value}
+                      placeholder="write content"
+                      onChange={handleChange}
+                    />
+                  </div>
+                ))}
+              </form>
+            </div>
+          );
+        })}
+      </FormDiv>
     </Section>
   );
 };
