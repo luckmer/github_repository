@@ -1,13 +1,18 @@
 import styled from "styled-components";
 
 export const Nav = styled.nav`
-  width: 100vw;
   display: flex;
-  padding: 20px 50px 20px 50px;
+
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: #007bff !important;
+  @media screen and (min-width: 400px) {
+    padding: 20px 50px 20px 50px;
+  }
+  @media screen and (max-width: 400px) {
+    padding: 20px 0;
+  }
 `;
 export const Ul = styled.ul`
   padding-right: 0.5rem;
