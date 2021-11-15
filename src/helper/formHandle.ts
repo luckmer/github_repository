@@ -1,14 +1,14 @@
-import { propsInterface, Node } from "./propsInterface";
+import { propsInterface, Node } from "./interface/propsInterface";
 
 import repositories from "../api/Queries";
-import constants from "./constants";
 import githubApi from "../api/api";
 
 class FormHandle {
   getDataByUserName = async (props: propsInterface) => {
-    const { text, setData } = props;
-    const user = constants.clearSpacer(text);
-    const repoName = text.split(",").pop();
+    const { text, setData, setLoading } = props;
+    const user = text.user;
+    const repoName = text.repository;
+    setLoading(true);
 
     if (!user) return;
 
@@ -18,19 +18,22 @@ class FormHandle {
 
     if (!repos) return;
 
+    console.log(repoName);
     const dataResult = {
       title: "searching by user name",
-      key: repoName,
+      key: !repoName ? user : repoName,
       data: repoName
         ? repos.filter(({ node }: Node) => node.name === repoName)
         : repos
     };
     setData(dataResult);
+    setLoading(false);
   };
 
   getDataByRepositoryName = async (props: propsInterface) => {
-    const { text, setData } = props;
-    const repoName = text.split(",").pop();
+    const { text, setData, setLoading } = props;
+    const repoName = text.repository;
+    setLoading(true);
 
     if (!repoName) return;
 
@@ -46,6 +49,7 @@ class FormHandle {
       data: repos
     };
     setData(dataResult);
+    setLoading(false);
   };
 }
 
