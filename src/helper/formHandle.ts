@@ -18,7 +18,6 @@ class FormHandle {
 
     if (!repos) return;
 
-    console.log(repoName);
     const dataResult = {
       title: "searching by user name",
       key: !repoName ? user : repoName,
