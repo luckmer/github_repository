@@ -50,20 +50,6 @@ class Repositories {
         }
       }`;
   };
-
-  userData = (user: string) => {
-    return `query{
-        search (query: "${user}", type: USER, first: 1){
-          edges {
-            node {
-              ... on User {
-                login
-              }
-            }
-          }
-        }
-    }`;
-  };
 }
 
 const repositories = new Repositories();
