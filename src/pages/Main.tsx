@@ -1,120 +1,157 @@
-import { FormDiv, FormBox, SearchInput, SearchButton } from "../css/Main.style";
-import { BsSearch } from "react-icons/bs";
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 
-import formHandle from "../helper/formHandle";
-import styled from "styled-components";
+import DatePicker from "../components/datePicker";
+import TextPanel from "../components/TextPanel";
+import Helpers from "../helper/MainHelpers";
 
-interface ErrorInterface {
-  status: boolean;
-  response: string;
-}
-
-const Section = styled.section``;
+import { FormDiv } from "../css/Main.style";
+import {
+  Form,
+  BoxSpacer,
+  CheckBox,
+  InputSpacer,
+  Input,
+  FormButton,
+  Footer,
+  Label,
+  Section,
+  SectionDiv,
+  CardMain,
+  Card,
+  Small,
+  CardDescription,
+  CardOwner,
+  CardFooter
+} from "../css/CardMain.style";
 
 const Main = () => {
-  const [checkedCheckboxes, setCheckedCheckboxes] = useState<
-    { value: string }[]
-  >([]);
-  const [text, setText] = useState<{ [x: string]: string }>({
-    user: "",
-    repository: ""
-  });
-  const [errors, setErrors] = useState<ErrorInterface | undefined>(undefined);
-  const [data, setData] = useState({});
-  const [keys, setKeys] = useState<string[]>([]);
-  // const { getDataByUserName, getDataByRepositoryName } = formHandle;
+  const [slicer, setSlicer] = useState(15);
+  const [end, setEnd] = useState(false);
 
-  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
+  const {
+    handleCheckboxChange,
+    checkedCheckboxes,
+    handleChange,
+    handleSubmit,
+    loading,
+    errors,
+    data,
+    text
+  } = Helpers();
 
-  //   if (!text) {
-  //     const errorPanel = {
-  //       status: false,
-  //       response: "input can't by empty"
-  //     };
+  useEffect(() => {
+    const onScroll = () => {
+      if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+        setSlicer(slicer + 15);
+      }
+    };
 
-  //     setErrors(errorPanel);
-  //     return;
-  //   }
+    window.addEventListener("scroll", onScroll);
 
-  //   const byUser = text.includes(",");
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [slicer]);
 
-  //   const PROPS = { text, setData };
+  useEffect(() => {
+    const slicedData = data.data.slice(0, slicer);
+    const content = data.data;
 
-  //   switch (byUser) {
-  //     case true:
-  //       getDataByUserName({ ...PROPS });
-  //       break;
-  //     case false:
-  //       getDataByRepositoryName({ ...PROPS });
-  //       break;
-  //     default:
-  //       break;
-  //   }
-  // };
-  const handleSubmit = () => {};
+    if (!content.length) return;
 
-  const handleChange = (e: React.ChangeEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLInputElement;
-    setText({ ...text, [target.name]: target.value });
-  };
-
-  console.log(text);
-
-  const handleCheckboxChange = (data: { value: string }) => {
-    const isChecked = checkedCheckboxes.some(
-      ({ value }: { value: string }) => value === data.value
-    );
-    if (isChecked) {
-      setCheckedCheckboxes(
-        checkedCheckboxes.filter(
-          ({ value }: { value: string }) => value !== data.value
-        )
-      );
-    } else setCheckedCheckboxes((prev) => prev.concat(data));
-  };
+    if (content.length === slicedData.length) {
+      setEnd(true);
+    } else {
+      setEnd(false);
+    }
+  }, [data, slicer]);
 
   const receivedData = [{ value: "user" }, { value: "repository" }];
+  const slicedData = data.data.slice(0, slicer);
 
   return (
-    <Section>
-      <FormDiv>
-        {receivedData?.map((data, index) => {
-          const Sort = checkedCheckboxes.filter(
-            ({ value }: { value: string }) => value === data.value
-          );
-          return (
-            <div key={`cb-${index}`}>
-              <div>
-                <input
-                  value={data.value}
-                  type="checkbox"
-                  checked={checkedCheckboxes.some(
-                    ({ value }: { value: string }) => {
-                      return value === data.value;
-                    }
-                  )}
-                  onChange={() => handleCheckboxChange(data)}
-                />
-                {data.value}
-              </div>
-              <form>
+    <section>
+      <FormDiv id="here">
+        <Form onSubmit={(e) => handleSubmit(e, setSlicer, setEnd)}>
+          {receivedData?.map((data, index) => {
+            const Sort = checkedCheckboxes.filter(
+              ({ value }: { value: string }) => value === data.value
+            );
+            const animateMove = Sort.some(
+              ({ value }: { value: string }) => value === data.value
+            );
+
+            return (
+              <BoxSpacer key={`cb-${index}`} move={animateMove}>
+                <CheckBox>
+                  <input
+                    value={data.value}
+                    type="checkbox"
+                    checked={checkedCheckboxes.some(
+                      ({ value }: { value: string }) => value === data.value
+                    )}
+                    onChange={() => handleCheckboxChange(data)}
+                  />
+                  <label>{data.value}</label>
+                </CheckBox>
                 {Sort.map(({ value }: { value: string }) => (
-                  <div key={value}>
-                    <input
+                  <InputSpacer key={value} id="here">
+                    <Input
                       name={value}
+                      value={text[value]}
                       placeholder="write content"
                       onChange={handleChange}
                     />
-                  </div>
+                  </InputSpacer>
                 ))}
-              </form>
-            </div>
-          );
-        })}
+              </BoxSpacer>
+            );
+          })}
+          <FormButton type="submit" value="submit" />
+          {!errors?.status && errors !== undefined && (
+            <Footer status={errors?.status}>
+              <Label>{errors?.response}</Label>
+            </Footer>
+          )}
+        </Form>
       </FormDiv>
-    </Section>
+      {data.title && (
+        <Section>
+          <SectionDiv>
+            <label>{data.title}</label>
+          </SectionDiv>
+          <div>
+            <CardMain>
+              {slicedData.map(({ node }: { node: any }, index: number) => (
+                <Card key={index}>
+                  <Small>description</Small>
+                  <CardDescription>
+                    {node.description && (
+                      <TextPanel description={node.description} />
+                    )}
+                  </CardDescription>
+                  <CardOwner>
+                    <a href={node.url}>
+                      <p>By {node.owner.login}</p>
+                    </a>
+                  </CardOwner>
+                  <CardFooter>
+                    <small>
+                      Create At: <DatePicker date={node.createdAt} />
+                    </small>
+                  </CardFooter>
+                </Card>
+              ))}
+            </CardMain>
+          </div>
+        </Section>
+      )}
+      {end || loading ? (
+        <Footer status={errors?.status}>
+          <Label>{loading ? "loading..." : "loaded content"}</Label>
+        </Footer>
+      ) : (
+        ""
+      )}
+    </section>
   );
 };
 
