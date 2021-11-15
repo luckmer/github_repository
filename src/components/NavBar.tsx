@@ -11,13 +11,6 @@ const NavBar = () => {
           </Link>
         </Ul>
       </Header>
-      <Header>
-        <Ul>
-          <Link to="/help">
-            <ButtonLi>HELP</ButtonLi>
-          </Link>
-        </Ul>
-      </Header>
     </Nav>
   );
 };
